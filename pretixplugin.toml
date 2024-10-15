@@ -1,0 +1,5 @@
+[plugin]
+package = "pretix-szamlazz"
+modules = [ "pretix_szamlazz" ]
+marketplace_name = "szamlazz"
+

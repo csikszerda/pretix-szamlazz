@@ -1,0 +1,5 @@
+recursive-include pretix_szamlazz/static *
+recursive-include pretix_szamlazz/templates *
+recursive-include pretix_szamlazz/locale *
+include LICENSE
+exclude .gitlab-ci.yml
