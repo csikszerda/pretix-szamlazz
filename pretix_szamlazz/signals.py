@@ -11,6 +11,8 @@ from xsdata.models.datatype import XmlDate
 from xsdata.formats.dataclass.context import XmlContext
 from xsdata.formats.dataclass.serializers import XmlSerializer
 from xsdata.formats.dataclass.parsers import XmlParser
+from xsdata.formats.converter import Converter, converter
+from i18nfield.fields import LazyI18nString
 import datetime
 import logging
 from textwrap import dedent
@@ -30,6 +32,15 @@ budapest_time = zoneinfo.ZoneInfo("Europe/Budapest")
 xml_context = XmlContext()
 xml_serializer = XmlSerializer(context=xml_context)
 xml_parser = XmlParser(context=xml_context)
+
+class LazyI18nStringConverter(Converter):
+  def deserialize(self, value: str, **kwargs) -> LazyI18nString:
+    raise RuntimeError("Unimplemented.")
+
+  def serialize(self, value: LazyI18nString, **kwargs) -> str:
+    return value.localize("hu")
+
+converter.register_converter(LazyI18nString, LazyI18nStringConverter)
 
 @receiver(order_paid, dispatch_uid="order_paid_szamlazz")
 def order_paid_szamlazz(sender, order: Order, **kwargs): # pyright: ignore [ reportMissingParameterType, reportUnknownParameterType ]
