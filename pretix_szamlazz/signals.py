@@ -48,7 +48,6 @@ def order_paid_szamlazz(sender, order: Order, **kwargs): # pyright: ignore [ rep
   today_xml = XmlDate(year=today.year, month=today.month, day=today.day)
 
   invoice_address = order.invoice_address
-  is_eu_vat_id = invoice_address.vat_id and re.match("[A-Z]{2}", invoice_address.vat_id)
 
   with translation.override('hu'):
     comment = "A számla kiegyenlítése megtörtént, pénzügyi rendezést nem igényel."
@@ -92,8 +91,8 @@ def order_paid_szamlazz(sender, order: Order, **kwargs): # pyright: ignore [ rep
         telepules=invoice_address.city,
         cim=invoice_address.street,
         email=order.email,
-        adoszam=invoice_address.vat_id if invoice_address.vat_id and not is_eu_vat_id else None,
-        adoszam_eu=invoice_address.vat_id if is_eu_vat_id else None,
+        adoszam=invoice_address.custom_field if invoice_address.company else None,
+        adoszam_eu=invoice_address.vat_id if invoice_address.company else None,
         orszag=invoice_address.country.name,
         telefonszam=str(order.phone),
         send_email=True,
@@ -134,7 +133,7 @@ def order_canceled_szamlazz(sender, order: Order, **kwargs): # pyright: ignore [
   if order_invoice.alap.tipus == "SS":
     logger.warn(f"Szamlazz.hu invoice for order code {order.code} has already been cancelled by invoice {order_invoice.alap.szamlaszam}")
     return
-  
+
   today = datetime.datetime.now(budapest_time)
   today_xml = XmlDate(year=today.year, month=today.month, day=today.day)
 
